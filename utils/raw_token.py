@@ -1,10 +1,9 @@
 import re
 import string
-from reference_supplier import ReferenceSupplier
 
 
 class RawToken:
-    def __init__(self, (key, value), reference_supplier=ReferenceSupplier()):
+    def __init__(self, (key, value)):
         self.set_tokens_dict = dict()
 
         # sanitize key and value
@@ -22,11 +21,9 @@ class RawToken:
         for ref_with_delims in raw_refs:
             # sanitize references by removing delimiting chars
             ref_name = re.sub("({{|}}|~{|}~|%{|}%)", "", ref_with_delims)
-            ref = reference_supplier.get_reference(ref_name, self)
-            if ref.name not in self.references_dict:
-                self.references_dict[ref.name] = ReferenceWrapper()
-            self.references_dict[ref.name].ref = ref
-            self.references_dict[ref.name].refs_with_delims.append(ref_with_delims)
+            if ref_name not in self.references_dict:
+                self.references_dict[ref_name] = []
+            self.references_dict[ref_name].append(ref_with_delims)
 
     def set_token(self, raw_token):
         if not hasattr(raw_token, "key"):
@@ -47,11 +44,11 @@ class RawToken:
 
     def get_replaced_value(self):
         ret = self.value
-        for (ref_name, ref_wrapper) in self.references_dict.items():
+        for (ref_name, refs_with_delims) in self.references_dict.items():
             if ref_name not in self.set_tokens_dict:
                 continue
             val = self.set_tokens_dict[ref_name].get_replaced_value()
-            for ref_with_delims in ref_wrapper.refs_with_delims:
+            for ref_with_delims in refs_with_delims:
                 ret = string.replace(ret, ref_with_delims, val)
         return ret
 
@@ -61,9 +58,3 @@ class RawToken:
     def __repr__(self):
         return str(self)
 
-
-class ReferenceWrapper:
-
-    def __init__(self):
-        self.ref = None
-        self.refs_with_delims = []

@@ -1,5 +1,4 @@
 from utils.raw_token import RawToken
-from utils.reference_supplier import ReferenceSupplier
 
 
 def should_replace_token():
@@ -16,20 +15,8 @@ def should_replace_token():
     assert returned == expected, "returned %s different from expected %s" % (returned, expected)
 
 
-def should_link_all_references():
-    reference_supplier = ReferenceSupplier()
-    RawToken(("key1", "value {{key2}} value ~{key2}~ value %{key2}% value {{key3}} value"), reference_supplier)
-
-    returned = set(reference_supplier.references.keys())
-    print "returned references: %s" % returned
-
-    expected = set(["key2", "key3"])
-    assert returned == expected, "returned %s different from expected %s" % (returned, expected)
-
-
 def run_all_tests():
     should_replace_token()
-    should_link_all_references()
 
 
 if __name__ == "__main__":

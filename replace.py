@@ -1,5 +1,4 @@
 from utils.raw_token import RawToken
-from utils.reference_supplier import ReferenceSupplier
 import utils.strings as u_str
 
 # TODO: define all tokens here, and split and use them later
@@ -15,8 +14,7 @@ FILE_2 = """
 
 
 def main():
-    reference_supplier = ReferenceSupplier()
-    tokens_dict = get_merged_tokens_dict([FILE_1, FILE_2], reference_supplier)
+    tokens_dict = get_merged_tokens_dict([FILE_1, FILE_2])
 
     for (token_name, token) in tokens_dict.items():
 
@@ -29,9 +27,9 @@ def main():
         print token
 
 
-def get_merged_tokens_dict(input_files, reference_supplier):
+def get_merged_tokens_dict(input_files):
     def convert_to_raw_token_list(file):
-        ret = [RawToken((key, value), reference_supplier) for (key, value) in u_str.convert_string_to_key_value_tuples(file)]
+        ret = [RawToken((key, value)) for (key, value) in u_str.convert_string_to_key_value_tuples(file)]
         return ret
     all_raw_tokens = []
     for input_file in input_files:
