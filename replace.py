@@ -1,12 +1,12 @@
 from utils.raw_token import RawToken
 import utils.strings as u_str
 
-# TODO: define all tokens here, and split and use them later
+DELIMITERS = [("{{", "}}"), ("~{", "}~"), ("%{", "}%")]
 
 FILE_1 = """
     k1=(v1 p2: {{k2}})
-    k2=(v2 p3: {{k3}})
-    k4=(v4 p5: {{k5}})  
+    k2=(v2 p3: ~{k3}~)
+    k4=(v4 p5: %{k5}%)  
     """
 
 FILE_2 = """
@@ -31,7 +31,7 @@ def main():
 
 def get_merged_tokens_dict(input_files):
     def convert_to_raw_token_list(file):
-        ret = [RawToken((key, value)) for (key, value) in u_str.convert_string_to_key_value_tuples(file)]
+        ret = [RawToken((key, value), DELIMITERS) for (key, value) in u_str.convert_string_to_key_value_tuples(file)]
         return ret
     all_raw_tokens = []
     for input_file in input_files:

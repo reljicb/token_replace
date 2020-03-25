@@ -3,7 +3,7 @@ import string
 
 
 class RawToken:
-    def __init__(self, (key, value)):
+    def __init__(self, (key, value), delimiters):
         self.set_tokens_dict = dict()
 
         # sanitize key and value
@@ -14,7 +14,7 @@ class RawToken:
         self.circular_dependency_flag = None
 
         # extract references to other tokens in value
-        raw_refs = re.compile("(?:{{[^}]+}}|~{[^}]+}~|%{[^}]+}%)").findall(self.value)
+        raw_refs = re.compile(build_regex_patter(delimiters)).findall(self.value)
 
         # populate reference dict
         self.references_dict = dict()
@@ -67,3 +67,11 @@ class RawToken:
     def __repr__(self):
         return str(self)
 
+
+def build_regex_patter(delimiters):
+    ret = "(?:%s)" % "|".join(["%(left_del)s[^%(right_del_first_char)s]+%(right_del)s" % {
+        "left_del": left_del,
+        "right_del_first_char": right_del[:1],
+        "right_del": right_del
+    } for (left_del, right_del) in delimiters])
+    return ret
