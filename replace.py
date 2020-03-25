@@ -1,26 +1,16 @@
+import os
 from utils.raw_token import RawToken
 import utils.strings as u_str
 
-DELIMITERS = [("{{", "}}"), ("~{", "}~"), ("%{", "}%")]
+SUPPORTED_DELIMITERS = [("{{", "}}"), ("~{", "}~"), ("%{", "}%")]
 
-FILE_1 = """
-    k1=(v1 p2: {{k2}})
-    k2=(v2 p3: ~{k3}~)
-    k4=(v4 p5: %{k5}%)
-    k7=(v7 p6: ~{k6}~)  
-    """
-
-FILE_2 = """
-    k3=(v3 p1: {{k1}})
-    k5=v5
-    k6=(v6 multiline \\
-text\\  
- end
-    """
+PROPERTY_FILE_CSV_PATHS = "%(cwd)s/resources/file_1.properties,%(cwd)s/resources/file_2.properties" % {"cwd": os.getcwd()}
 
 
 def main():
-    tokens_dict = get_merged_tokens_dict([FILE_1, FILE_2])
+    all_files = [read_file_to_string(file_path) for file_path in PROPERTY_FILE_CSV_PATHS.split(",")]
+
+    tokens_dict = get_merged_tokens_dict(all_files)
 
     for (token_name, token) in tokens_dict.items():
 
@@ -35,13 +25,18 @@ def main():
 
 def get_merged_tokens_dict(input_files):
     def convert_to_raw_token_list(file):
-        ret = [RawToken((key, value), DELIMITERS) for (key, value) in u_str.convert_string_to_key_value_tuples(file)]
+        ret = [RawToken((key, value), SUPPORTED_DELIMITERS) for (key, value) in u_str.convert_string_to_key_value_tuples(file)]
         return ret
     all_raw_tokens = []
     for input_file in input_files:
         all_raw_tokens += [t for t in convert_to_raw_token_list(input_file)]
 
     return {t.key: t for t in all_raw_tokens}
+
+
+def read_file_to_string(file_path):
+    with open(file_path.strip(), 'r') as f:
+        return f.read()
 
 
 if __name__ == "__main__":
