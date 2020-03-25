@@ -4,12 +4,14 @@ import utils.strings as u_str
 # TODO: define all tokens here, and split and use them later
 
 FILE_1 = """
-    k1=(k1 v1)
-    k2=(k2 v3: {{k3}})  
+    k1=(v1 p2: {{k2}})
+    k2=(v2 p3: {{k3}})
+    k4=(v4 p5: {{k5}})  
     """
 
 FILE_2 = """
-    k3=(k3 k1: {{k1}})
+    k3=(v3 p1: {{k1}})
+    k5=v5
     """
 
 

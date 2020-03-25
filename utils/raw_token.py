@@ -42,18 +42,27 @@ class RawToken:
     def set_circular_dependency_flag(self, msg):
         self.circular_dependency_flag = msg
 
-    def get_replaced_value(self):
+    def get_replaced_value(self, call_stack=[]):
         ret = self.value
+
+        if self.key in call_stack:
+            return False, "ERROR: CIRCULAR_DEPENDENCY: " + " > ".join(call_stack + [self.key])
+
         for (ref_name, refs_with_delims) in self.references_dict.items():
             if ref_name not in self.set_tokens_dict:
                 continue
-            val = self.set_tokens_dict[ref_name].get_replaced_value()
+            is_status_ok, value = self.set_tokens_dict[ref_name].get_replaced_value(call_stack + [self.key])
+            if not is_status_ok:
+                return is_status_ok, value
+
             for ref_with_delims in refs_with_delims:
-                ret = string.replace(ret, ref_with_delims, val)
-        return ret
+                ret = string.replace(ret, ref_with_delims, value)
+
+        return True, ret
 
     def __str__(self):
-        return self.key + "=" + self.get_replaced_value()
+        is_status_ok, val = self.get_replaced_value()
+        return self.key + "=" + val
 
     def __repr__(self):
         return str(self)
