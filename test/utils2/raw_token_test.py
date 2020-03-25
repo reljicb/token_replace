@@ -1,10 +1,11 @@
 from utils.raw_token import RawToken
+from replace import DELIMITERS
 
 
 def should_replace_token():
-    rt_key1 = RawToken(("key1", "value {{key2}} value {{key3}} value {{key4}} value"))
-    rt_key2 = RawToken(("key2", "value2"))
-    rt_key3 = RawToken(("key3", "value3"))
+    rt_key1 = RawToken(("key1", "value {{key2}} value {{key3}} value {{key4}} value"), DELIMITERS)
+    rt_key2 = RawToken(("key2", "value2"), DELIMITERS)
+    rt_key3 = RawToken(("key3", "value3"), DELIMITERS)
     rt_key1.set_token(rt_key3)
     rt_key1.set_token(rt_key2)
 
