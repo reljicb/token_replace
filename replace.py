@@ -1,15 +1,13 @@
-import os
 from utils.raw_token import RawToken
 import utils.strings as u_str
-
-SUPPORTED_DELIMITERS_CSV = "{{}},~{}~,%{}%"
-
-PROPERTY_FILE_CSV_PATHS = "%(cwd)s/resources/file_1.properties,%(cwd)s/resources/file_2.properties" % {"cwd": os.getcwd()}
+from argparse import ArgumentParser
 
 
 def main():
-    all_files = [read_file_to_string(file_path) for file_path in PROPERTY_FILE_CSV_PATHS.split(",")]
-    supported_delims = get_delimiters_from_csv()
+    args = get_arguments()
+
+    all_files = [read_file_to_string(file_path) for file_path in args.property_file_csv_paths.split(",")]
+    supported_delims = get_delimiters_from_csv(args.supported_delimiters_csv)
 
     tokens_dict = get_merged_tokens_dict(all_files, supported_delims)
 
@@ -40,12 +38,24 @@ def read_file_to_string(file_path):
         return f.read()
 
 
-def get_delimiters_from_csv():
+def get_delimiters_from_csv(supported_delimiters_csv):
     def get_tupple_split_in_middle(delim):
         mid_str = int(round(len(delim)/2, 0))
         return delim[:mid_str], delim[mid_str:]
 
-    return [get_tupple_split_in_middle(delim.strip()) for delim in  SUPPORTED_DELIMITERS_CSV.split(",")]
+    return [get_tupple_split_in_middle(delim.strip()) for delim in supported_delimiters_csv.split(",")]
+
+
+def get_arguments():
+    parser = ArgumentParser()
+    parser.add_argument("-d", "--supported-delimiters-csv",
+                        help="Comma separated list of supported token delimiters" +
+                             " (pairs, left+right, for example: \"{{}},~{}~\")")
+    parser.add_argument("-f", "--property-file-csv-paths",
+                        help="Comma separated list of file paths containing key=value pair properties.")
+
+    return parser.parse_args()
+
 
 if __name__ == "__main__":
     main()
