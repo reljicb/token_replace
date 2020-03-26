@@ -13,17 +13,25 @@ def main():
     tokens_dict = get_merged_tokens_dict(all_files, supported_delims)
 
     for (token_name, token) in tokens_dict.items():
-
         for (ref_name, reference) in token.references_dict.items():
             if ref_name in tokens_dict:
                 ref_token = tokens_dict[ref_name]
                 token.set_token(ref_token)
 
+    output_tokens(tokens_dict, args)
+
+
+def output_tokens(tokens_dict, args):
+    properties_list = [str(token) for (token_name, token) in tokens_dict.items()]
+
+    if args.sort:
+        properties_list.sort()
+
     if args.output:
-        for (token_name, token) in tokens_dict.items():
+        for token in properties_list:
             args.output.write("%s\n" % token)
     else:
-        for (token_name, token) in tokens_dict.items():
+        for token in properties_list:
             print token
 
 
@@ -58,6 +66,8 @@ def get_arguments():
                              " (pairs, left+right, for example: \"{{}},~{}~\")")
     parser.add_argument("-f", "--property-file-csv-paths", required=True,
                         help="Comma separated list of file paths containing key=value pair properties.")
+    parser.add_argument("-s", "--sort", action='store_true',
+                        help="Sorts properties alphabetically. The property is optional (Default: not sorted).")
     parser.add_argument("-o", "--output", action='store',
                         type=argparse.FileType('w'), dest='output',
                         help="Directs the output to a name of your choice. If omitted, the output goes to STDOUT")
