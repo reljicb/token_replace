@@ -16,6 +16,7 @@ def convert_string_to_key_value_tuples(input_file):
     return [key_value for key_value in key_values if len(key_value) > 1]
 
 
-def sanitize_tuple((k, v)):
+def sanitize_tuple(tup):
+    (k, v) = (tup[0], tup[1]) if len(tup) > 1 else (tup[0], "")
     return tuple([k.strip(), v])
 
