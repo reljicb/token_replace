@@ -1,5 +1,7 @@
 import replace
 
+SUPPORTED_DELIMITERS = [("{{", "}}")]
+
 
 def should_take_latest_token_value():
     file_1 = """
@@ -12,7 +14,7 @@ def should_take_latest_token_value():
         NAME3=Value2: {{NAME2}}
         """
 
-    returned = replace.get_merged_tokens_dict([file_1, file_2])
+    returned = replace.get_merged_tokens_dict([file_1, file_2], SUPPORTED_DELIMITERS)
     returned = {it[0]: it[1].value for it in returned.items()}
 
     expected = {"NAME1": "Some value from file 2",

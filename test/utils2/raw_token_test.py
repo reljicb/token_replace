@@ -1,5 +1,6 @@
 from utils.raw_token import RawToken
-from replace import SUPPORTED_DELIMITERS
+
+SUPPORTED_DELIMITERS = [("{{", "}}")]
 
 
 def should_replace_token():

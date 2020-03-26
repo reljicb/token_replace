@@ -4,11 +4,14 @@ import utils.strings as str
 def should_split_file_to_list():
     input_file = """
     key1=val1
+#
     key2 = val2  
+    not to \=  be show
     key3=  val3.1  \\
 val3.2\\ 
   val3.3
-    key4 =val4  
+    key4 =val4
+    # some comment to be ignored  
     key5
     key6=val6
     """
@@ -17,7 +20,7 @@ val3.2\\
     print "returned converted file to tuples: %s" % returned
 
     expected = [("key1", "val1"), ("key2", " val2"), ("key3", "  val3.1\nval3.2\n  val3.3"),
-                ("key4", "val4"), ("key5", ""), ("key6", "val6")]
+                ("key4", "val4"), ("key6", "val6")]
     assert returned == expected, "returned %s different from expected %s" % (returned, expected)
 
 
