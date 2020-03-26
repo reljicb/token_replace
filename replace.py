@@ -1,5 +1,6 @@
 from utils.raw_token import RawToken
 import utils.strings as u_str
+import argparse
 from argparse import ArgumentParser
 
 
@@ -18,8 +19,12 @@ def main():
                 ref_token = tokens_dict[ref_name]
                 token.set_token(ref_token)
 
-    for (token_name, token) in tokens_dict.items():
-        print token
+    if args.output:
+        for (token_name, token) in tokens_dict.items():
+            args.output.write("%s\n" % token)
+    else:
+        for (token_name, token) in tokens_dict.items():
+            print token
 
 
 def get_merged_tokens_dict(input_files, supported_delims):
@@ -48,11 +53,14 @@ def get_delimiters_from_csv(supported_delimiters_csv):
 
 def get_arguments():
     parser = ArgumentParser()
-    parser.add_argument("-d", "--supported-delimiters-csv",
+    parser.add_argument("-d", "--supported-delimiters-csv", required=True,
                         help="Comma separated list of supported token delimiters" +
                              " (pairs, left+right, for example: \"{{}},~{}~\")")
-    parser.add_argument("-f", "--property-file-csv-paths",
+    parser.add_argument("-f", "--property-file-csv-paths", required=True,
                         help="Comma separated list of file paths containing key=value pair properties.")
+    parser.add_argument("-o", "--output", action='store',
+                        type=argparse.FileType('w'), dest='output',
+                        help="Directs the output to a name of your choice. If omitted, the output goes to STDOUT")
 
     return parser.parse_args()
 
